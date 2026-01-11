@@ -1,4 +1,4 @@
-fetch("./pipelines/data/predictions.csv")
+fetch("./data/predictions.csv")
   .then(res => res.text())
   .then(text => {
     const rows = text.trim().split("\n").map(r => r.split(","));
