@@ -1,0 +1,70 @@
+name: Daily inference + deploy site
+
+on:
+  schedule:
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  inference_and_deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    env:
+      HOPSWORKS_API_KEY: ${{ secrets.HOPSWORKS_API_KEY }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run feature pipeline
+        run: ipython pipelines/tourism_feature_pipeline.ipynb
+
+      - name: Run inference pipeline
+        run: ipython pipelines/inference_pipeline.ipynb
+
+      - name: Copy predictions into site
+        run: |
+          test -f pipelines/data/predictions.csv
+          mkdir -p site/data
+          cp pipelines/data/predictions.csv site/data/predictions.csv
+
+      # OPTIONAL: only keep if you truly want predictions committed to git
+      - name: Commit updated predictions
+        run: |
+           git config user.name "github-actions"
+           git config user.email "actions@github.com"
+           git add pipelines/data/predictions.csv
+           git commit -m "Daily prediction update" || echo "No changes"
+           git pull --rebase
+           git push --force-with-lease
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./site
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
