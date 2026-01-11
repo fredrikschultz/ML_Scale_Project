@@ -1,5 +1,16 @@
 # ML Scale Project
 
+
+# Goal of project 
+The goal of this project was to build a prediction service for tourism in Sweden. We wanted to create a dashboard where travel agencies, tourism companies and airplane compeanies could use to see how many people where predicted to come and visit stockholm sweden for a specfic date. 
+
+# Solution 
+From the beginning we though about doing this with two data sources. The first data source that would be our dependent variable is the number of flights landed at arlanda. This would serve as a proxy variable for our tourism prediction. We used opensky to get 
+
+
+
+
+
 Trend data.
 We used googles api to download the trend data for the search words specified. 
 
