@@ -1,9 +1,9 @@
 name: Daily inference + deploy site
 
 on:
-  schedule:
-    - cron: "0 6 * * *"   # 06:00 UTC (08:00 Sweden)
-  workflow_dispatch:
+  #schedule:
+    #- cron: "0 6 * * *"   # 06:00 UTC (08:00 Sweden)
+ # workflow_dispatch:
 
 permissions:
   contents: write   # needed for git push
